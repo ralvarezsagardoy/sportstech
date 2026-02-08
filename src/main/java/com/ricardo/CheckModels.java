@@ -7,7 +7,7 @@ import java.net.http.HttpResponse;
 
 public class CheckModels {
     public static void main(String[] args) {
-        String key = "AIzaSyB3AKw2iOkOF6d8o26CJIhBZ8-XrMVACn4";
+        String key = "API_KEY_AQUÍ"; 
         String url = "https://generativelanguage.googleapis.com/v1beta/models?key=" + key;
 
         try {
