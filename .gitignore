@@ -1,0 +1,9 @@
+# Ignorar binarios de Java
+*.class
+
+# Ignorar carpeta de salida (generamos los HTMLs al vuelo)
+web_output/
+*.html
+
+# Ignorar archivos de sistema
+.DS_Store
