@@ -14,7 +14,7 @@ public class App {
         
         String url = "jdbc:mysql://localhost:3306/sportstech_db";
         String user = "root";
-        String password = "PASSWORD"; // 🔴 PASSWORD
+        String password = "PASSWORDMYSQL"; // 🔴 PASSWORD
 
         DescriptionGenerator ia = new OllamaGenerator(); 
         List<IndexTemplate.ProductData> productList = new ArrayList<>();

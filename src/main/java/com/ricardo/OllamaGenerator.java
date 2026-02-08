@@ -13,14 +13,12 @@ public class OllamaGenerator implements DescriptionGenerator {
 
     @Override
     public String generateReview(String brand, String model, double price) {
-        // ✅ CAMBIO: FORZAR ESPAÑOL
-        return callOllama("Escribe una reseña de venta muy breve (max 30 palabras) para el reloj " + brand + " " + model + ". Usa etiquetas HTML <strong> y <p>. NO respondas nada más, solo el HTML. RESPONDE SIEMPRE EN ESPAÑOL.");
+        return callOllama("Actúa como experto en marketing. Escribe una reseña de venta breve (max 30 palabras) para el reloj " + brand + " " + model + ". Usa etiquetas HTML <strong> y <p>. NO respondas nada más, solo el HTML. RESPONDE ÚNICAMENTE EN ESPAÑOL Y SIN EMOTICONOS Y HAZLO HUMANO, QUE NO SE NOTE QUE ES UNA IA.");
     }
 
     @Override
     public String generateTagline(String brand, String model) {
-        // ✅ CAMBIO: FORZAR ESPAÑOL
-        return callOllama("Escribe un eslogan de marketing de MÁXIMO 5 PALABRAS para el reloj " + brand + " " + model + ". Solo texto plano, sin comillas ni explicaciones. RESPONDE SIEMPRE EN ESPAÑOL.");
+        return callOllama("Escribe una frase corta por la que alguien debería comprar el reloj " + brand + " " + model + ". Solo texto plano, sin comillas ni explicaciones. RESPONDE ÚNICAMENTE EN ESPAÑOL Y RECUERDA QUE DEBE SER UNA FRASE CORTA, NO UN PARRAFO.");
     }
 
     private String callOllama(String promptText) {
@@ -47,15 +45,17 @@ public class OllamaGenerator implements DescriptionGenerator {
 
             String rawText = extractResponse(response.body());
             
-            // ✅ CAMBIO: LIMPIEZA DE "nn" Y CÓDIGOS RAROS
+            // LIMPIEZA FINAL (Ya sin borrar 'nn')
             return rawText
-                    .replace("\\n", " ")     // Cambia salto de línea escapado por espacio
-                    .replace("\n", " ")      // Cambia salto de línea real por espacio
-                    .replace("nn", " ")      // ELIMINA LOS "nn" FANTASMA
                     .replace("u003c", "<")   
                     .replace("u003e", ">")   
                     .replace("u0026", "&")   
-                    .replace("u00e1", "á") .replace("u00e9", "é") .replace("u00ed", "í") .replace("u00f3", "ó") .replace("u00fa", "ú") .replace("u00f1", "ñ") // Tildes básicas
+                    .replace("u00e1", "á").replace("u00c1", "Á")
+                    .replace("u00e9", "é").replace("u00c9", "É")
+                    .replace("u00ed", "í").replace("u00cd", "Í")
+                    .replace("u00f3", "ó").replace("u00d3", "Ó")
+                    .replace("u00fa", "ú").replace("u00da", "Ú")
+                    .replace("u00f1", "ñ").replace("u00d1", "Ñ")
                     .trim();
 
         } catch (Exception e) {
@@ -64,6 +64,7 @@ public class OllamaGenerator implements DescriptionGenerator {
         }
     }
 
+    // LECTOR JSON MEJORADO: Convierte \n en espacio correctamente
     private String extractResponse(String json) {
         try {
             String marker = "\"response\":\"";
@@ -75,7 +76,12 @@ public class OllamaGenerator implements DescriptionGenerator {
             for (int i = start; i < json.length(); i++) {
                 char c = json.charAt(i);
                 if (escape) {
-                    if (c == '"') result.append('"'); else result.append(c);
+                    // AQUÍ ESTÁ EL ARREGLO:
+                    if (c == 'n') result.append(" ");       // \n -> espacio
+                    else if (c == 'r') result.append("");   // \r -> nada
+                    else if (c == 't') result.append(" ");  // \t -> espacio
+                    else if (c == '"') result.append('"');  // \" -> "
+                    else result.append(c);
                     escape = false;
                 } else {
                     if (c == '\\') escape = true; else if (c == '"') break; else result.append(c);
