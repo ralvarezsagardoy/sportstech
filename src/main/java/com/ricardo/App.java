@@ -49,8 +49,8 @@ public class App {
                 // Crear página individual
                 createProductPage(slug + ".html", marca, modelo, precio, reviewIA, imageUrl);
                 
-                System.out.println("⏳ Esperando 5s...");
-                Thread.sleep(5000); 
+                //System.out.println("⏳ Esperando 5s...");
+                //Thread.sleep(5000); 
             }
             
             // Generar Index
