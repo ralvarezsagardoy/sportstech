@@ -2,113 +2,100 @@ package com.ricardo;
 
 public class WebTemplate {
 
-    // 🔴 CONTADOR GLOBAL
-    private static int turno = 0;
+    public static String getPage(String brand, String model, double price, String reviewHtml, String imageUrl) {
+        return """
+            <!DOCTYPE html>
+            <html lang="es">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>
+                """ + brand + " " + model + """ 
+                | Colección Exclusiva</title>
+                
+                <link rel="preconnect" href="https://fonts.googleapis.com">
+                <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+                <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+                <style>
+                    :root { --bg: #050505; --gold: #d4af37; --gold-dim: #8a7020; --text: #e0e0e0; }
+                    body { margin: 0; padding: 0; background-color: var(--bg); color: var(--text); font-family: 'Playfair Display', serif; overflow-x: hidden; }
+                    
+                    /* 🔥 CORTINA DE TRANSICIÓN */
+                    #page-transition {
+                        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                        background: #000; z-index: 9999; pointer-events: none;
+                        opacity: 1; transition: opacity 0.8s ease;
+                    }
 
-    // --- EL JEFE: Recibe la URL de la imagen y la pasa al diseño ---
-    public static String getNextDesign(String brand, String model, double price, String review, String imageUrl) {
-        int diseño = turno % 3; 
-        turno++; 
+                    .container { display: flex; min-height: 100vh; align-items: center; justify-content: center; }
+                    .product-card { display: flex; width: 90%; max-width: 1400px; height: 85vh; border: 1px solid rgba(212, 175, 55, 0.3); box-shadow: 0 0 50px rgba(0,0,0,0.8); background: radial-gradient(circle at center, #0a0a0a, #000); position: relative; }
+                    .image-col { flex: 1; position: relative; overflow: hidden; border-right: 1px solid rgba(212, 175, 55, 0.2); }
+                    .image-col img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.8s ease; filter: brightness(0.9) contrast(1.1); }
+                    .image-col:hover img { transform: scale(1.05); }
+                    .info-col { flex: 1; padding: 60px; display: flex; flex-direction: column; justify-content: center; position: relative; }
+                    .info-col::after { content: ''; position: absolute; top: 30px; right: 30px; width: 100px; height: 100px; border-top: 2px solid var(--gold); border-right: 2px solid var(--gold); }
+                    h2 { font-family: 'Cinzel', serif; color: var(--gold); font-size: 18px; letter-spacing: 5px; margin: 0; text-transform: uppercase; opacity: 0.8; }
+                    h1 { font-family: 'Cinzel', serif; font-size: 60px; margin: 10px 0 30px; line-height: 1; background: linear-gradient(to right, #fff, #999); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+                    .price { font-size: 40px; color: var(--gold); font-family: 'Cinzel', serif; margin-bottom: 40px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 20px; display: inline-block; width: 100%; }
+                    .review-box { font-size: 18px; line-height: 1.8; color: #ccc; margin-bottom: 50px; border-left: 3px solid var(--gold); padding-left: 25px; font-style: italic; }
+                    .review-box strong { color: #fff; font-weight: normal; border-bottom: 1px solid var(--gold-dim); }
+                    .review-box p { margin: 0; }
+                    .actions { display: flex; gap: 20px; }
+                    .btn-buy { padding: 18px 50px; background: var(--gold); color: #000; border: none; font-family: 'Cinzel', serif; font-weight: bold; font-size: 16px; letter-spacing: 2px; cursor: pointer; transition: 0.3s; text-transform: uppercase; }
+                    .btn-buy:hover { background: #fff; box-shadow: 0 0 20px rgba(212, 175, 55, 0.5); }
+                    
+                    /* Botón volver estilo cursor */
+                    .btn-back { cursor: pointer; text-decoration: none; padding: 18px 30px; border: 1px solid var(--gold); color: var(--gold); font-family: 'Cinzel', serif; font-size: 14px; letter-spacing: 2px; transition: 0.3s; display: flex; align-items: center; justify-content: center; }
+                    .btn-back:hover { background: rgba(212, 175, 55, 0.1); color: #fff; border-color: #fff; }
+                    
+                    @media (max-width: 900px) { .product-card { flex-direction: column; height: auto; margin: 20px 0; } .image-col { height: 400px; border-right: none; border-bottom: 1px solid var(--gold); } .info-col { padding: 40px; } h1 { font-size: 40px; } }
+                </style>
+            </head>
+            <body>
+                <div id="page-transition"></div> <div class="container">
+                    <div class="product-card">
+                        <div class="image-col">
+                            <img src=\"""" + imageUrl + """
+                            \" alt=\"""" + model + """
+                            \">
+                        </div>
+                        <div class="info-col">
+                            <h2>""" + brand.toUpperCase() + """
+                            </h2>
+                            <h1>""" + model + """
+                            </h1>
+                            <div class="price">$""" + price + """
+                            </div>
+                            <div class="review-box">
+                                """ + reviewHtml + """
+                            </div>
+                            <div class="actions">
+                                <button class="btn-buy">Adquirir</button>
+                                <div onclick="navigateTo('index.html')" class="btn-back"><i class="fa-solid fa-arrow-left"></i> &nbsp; Volver</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-        if (diseño == 0) {
-            System.out.println("🎨 Asignando turno 1: CYBERPUNK");
-            return getDarkDesign(brand, model, price, review, imageUrl);
-        } else if (diseño == 1) {
-            System.out.println("🎨 Asignando turno 2: MINIMALISTA");
-            return getLightDesign(brand, model, price, review, imageUrl);
-        } else {
-            System.out.println("🎨 Asignando turno 3: LUJO");
-            return getLuxuryDesign(brand, model, price, review, imageUrl);
-        }
-    }
+                <script>
+                    // 🔥 ENTRADA SUAVE (Fade In)
+                    window.onload = () => {
+                        const curtain = document.getElementById('page-transition');
+                        setTimeout(() => curtain.style.opacity = '0', 100);
+                    };
 
-    // --- DISEÑO 1: CYBERPUNK (Foto grande y brillante) ---
-    private static String getDarkDesign(String brand, String model, double price, String review, String imageUrl) {
-        return "<!DOCTYPE html><html lang='es'>" +
-               "<head><meta charset='UTF-8'><script src='https://cdn.tailwindcss.com'></script></head>" +
-               "<body class='bg-slate-900 text-slate-200 font-sans min-h-screen flex flex-col items-center justify-center p-6'>" +
-               "  <div class='max-w-2xl w-full text-center space-y-8'>" +
-               "    <a href='index.html' class='text-emerald-400 font-bold hover:underline'>← Volver al Catálogo</a>" +
-               "    <div class='mt-4'>" +
-               "      <span class='bg-slate-800 text-emerald-400 px-3 py-1 rounded-full text-sm font-semibold tracking-wide uppercase'>" + brand + "</span>" +
-               "      <h1 class='text-5xl font-extrabold text-white mt-4 tracking-tight'>" + model + "</h1>" +
-               "    </div>" +
-               
-               // 📸 FOTO CYBERPUNK
-               "    <div class='relative group'>" +
-               "      <div class='absolute -inset-1 bg-gradient-to-r from-emerald-600 to-blue-600 rounded-2xl blur opacity-25 group-hover:opacity-75 transition duration-1000 group-hover:duration-200'></div>" +
-               "      <img src='" + imageUrl + "' alt='" + model + "' class='relative rounded-2xl shadow-2xl w-full object-cover h-80 border-2 border-slate-700 transform transition group-hover:scale-[1.01]'>" +
-               "    </div>" +
-
-               "    <div class='bg-slate-800 p-8 rounded-2xl border border-slate-700 shadow-2xl'>" +
-               "      <div class='flex items-baseline justify-center gap-2'>" +
-               "        <span class='text-5xl font-bold text-white'>$" + price + "</span>" +
-               "      </div>" +
-               "      <button class='mt-6 w-full bg-emerald-500 hover:bg-emerald-400 text-slate-900 font-bold py-4 rounded-xl transition-all shadow-lg shadow-emerald-500/20'>Comprar Ahora</button>" +
-               "    </div>" +
-               "    <div class='text-left bg-slate-800/50 p-6 rounded-xl border border-slate-700'>" +
-               "      <h3 class='text-xl font-bold text-white mb-3 border-l-4 border-emerald-500 pl-3'>Opinión del Experto</h3>" +
-               "      <div class='text-slate-300 leading-relaxed text-lg'>" + review + "</div>" +
-               "    </div>" +
-               "  </div>" +
-               "</body></html>";
-    }
-
-    // --- DISEÑO 2: MINIMALISTA (Foto a la izquierda) ---
-    private static String getLightDesign(String brand, String model, double price, String review, String imageUrl) {
-        return "<!DOCTYPE html><html lang='es'>" +
-               "<head><meta charset='UTF-8'><script src='https://cdn.tailwindcss.com'></script></head>" +
-               "<body class='bg-white text-gray-900 font-sans min-h-screen flex flex-col items-center justify-center p-6'>" +
-               "  <div class='max-w-4xl w-full space-y-10'>" +
-               "    <nav class='flex justify-between items-center border-b pb-4'>" +
-               "       <a href='index.html' class='text-gray-500 hover:text-black transition'>← Catálogo</a>" +
-               "       <span class='font-semibold text-gray-400 tracking-wider'>" + brand.toUpperCase() + "</span>" +
-               "    </nav>" +
-               "    <div class='grid md:grid-cols-2 gap-12 items-center'>" +
-               
-               // 📸 FOTO MINIMALISTA
-               "      <div class='bg-gray-100 rounded-3xl p-6 flex items-center justify-center'>" +
-               "         <img src='" + imageUrl + "' alt='" + model + "' class='rounded-xl shadow-lg w-full object-cover hover:scale-105 transition duration-500'>" +
-               "      </div>" +
-
-               "      <div class='space-y-6'>" +
-               "        <h1 class='text-5xl font-bold tracking-tighter text-black'>" + model + "</h1>" +
-               "        <p class='text-3xl text-blue-600 font-medium'>$" + price + "</p>" +
-               "        <div class='text-gray-600 leading-relaxed text-lg'>" + review + "</div>" +
-               "        <button class='bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-full font-medium transition shadow-lg shadow-blue-200 w-full'>Añadir a la cesta</button>" +
-               "      </div>" +
-               "    </div>" +
-               "  </div>" +
-               "</body></html>";
-    }
-
-    // --- DISEÑO 3: LUJO (Foto artística) ---
-    private static String getLuxuryDesign(String brand, String model, double price, String review, String imageUrl) {
-        return "<!DOCTYPE html><html lang='es'>" +
-               "<head><meta charset='UTF-8'><script src='https://cdn.tailwindcss.com'></script>" +
-               "<link href='https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap' rel='stylesheet'></head>" +
-               "<body class='bg-stone-100 text-stone-800 min-h-screen flex flex-col items-center justify-center p-8'>" +
-               "  <div class='max-w-xl w-full text-center border border-stone-300 bg-white shadow-2xl overflow-hidden'>" +
-               
-               // 📸 FOTO LUJO
-               "    <div class='w-full h-80 overflow-hidden'>" +
-               "       <img src='" + imageUrl + "' alt='" + model + "' class='w-full h-full object-cover opacity-90 hover:opacity-100 transition duration-1000 hover:scale-110'>" +
-               "    </div>" +
-
-               "    <div class='p-12'>" +
-               "      <p class='text-xs font-bold tracking-[0.3em] text-stone-500 uppercase mb-4'>" + brand + " Collection</p>" +
-               "      <h1 class='text-4xl mb-6 font-serif italic text-stone-900' style='font-family: \"Playfair Display\", serif;'>" + model + "</h1>" +
-               "      <div class='w-16 h-1 bg-amber-600 mx-auto mb-6'></div>" +
-               "      <div class='text-lg leading-loose text-stone-600 mb-8 font-serif' style='font-family: \"Playfair Display\", serif;'>" + review + "</div>" +
-               "      <div class='flex justify-center items-center gap-6 mt-8 border-t border-stone-200 pt-8'>" +
-               "         <span class='text-3xl font-serif text-stone-900'>$" + price + "</span>" +
-               "         <button class='bg-stone-900 text-white px-8 py-3 uppercase text-xs tracking-widest hover:bg-amber-700 transition duration-500'>Adquirir</button>" +
-               "      </div>" +
-               "      <div class='mt-6'>" +
-               "        <a href='index.html' class='text-stone-400 text-xs hover:text-stone-900 transition'>VOLVER</a>" +
-               "      </div>" +
-               "    </div>" +
-               "  </div>" +
-               "</body></html>";
+                    // 🔥 SALIDA SUAVE (Fade Out)
+                    function navigateTo(url) {
+                        const curtain = document.getElementById('page-transition');
+                        curtain.style.opacity = '1';
+                        setTimeout(() => {
+                            window.location.href = url;
+                        }, 800);
+                    }
+                </script>
+            </body>
+            </html>
+            """;
     }
 }

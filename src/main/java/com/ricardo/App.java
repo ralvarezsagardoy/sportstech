@@ -63,7 +63,7 @@ public class App {
     }
 
     private static void createProductPage(String fileName, String brand, String model, double price, String review, String imageUrl) {
-        String htmlContent = WebTemplate.getNextDesign(brand, model, price, review, imageUrl);
+        String htmlContent = WebTemplate.getPage(brand, model, price, review, imageUrl);
         saveFile(fileName, htmlContent);
     }
 
