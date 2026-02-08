@@ -13,12 +13,12 @@ public class OllamaGenerator implements DescriptionGenerator {
 
     @Override
     public String generateReview(String brand, String model, double price) {
-        return callOllama("Actúa como experto en marketing. Escribe una reseña de venta breve (max 30 palabras) para el reloj " + brand + " " + model + ". Usa etiquetas HTML <strong> y <p>. NO respondas nada más, solo el HTML. RESPONDE ÚNICAMENTE EN ESPAÑOL Y SIN EMOTICONOS Y HAZLO HUMANO, QUE NO SE NOTE QUE ES UNA IA.");
+        return callOllama("Escribe una reseña de venta breve (max 30 palabras) para el producto " + brand + " " + model + ". Usa etiquetas HTML <strong> y <p>. NO respondas nada más, solo el HTML. RESPONDE ÚNICAMENTE EN ESPAÑOL Y SIN EMOTICONOS, IMPORTANTE, SIN EMOTICONOS, SOLO PALABRAS. NO INCLUYAS NINGUNA INTRODUCCIÓN NI CONCLUSIÓN. Y HAZLO HUMANO, como lo haría un experto, QUE NO SE NOTE QUE ES UNA IA. ADEMÁS, QUIERO QUE INDIQUES VENTAJAS CON RESPECTO A SUS COMPETIDORES EN EL MERCADO, POR EJEMPLO, SI ES MÁS ECONÓMICO QUE OTRO, SI ES MÁS LIGERO, SI TIENE MEJOR BATERÍA, ETC. RECUERDA QUE DEBE SER UNA RESEÑA DE VENTA, NO UN PÁRRAFO INFORMATIVO, QUIERO QUE CONVENCAS AL USUARIO DE COMPRARLO, HAZLO LO MÁS ATRACTIVO POSIBLE. NO INCLUYAS NINGUNA INTRODUCCIÓN NI CONCLUSIÓN, SOLO EL CUERPO DE LA RESEÑA. RECUERDA QUE DEBE TENER UNA EXTENSIÓN MEDIA, MENOS DE 50 PALABRAS" );
     }
 
     @Override
     public String generateTagline(String brand, String model) {
-        return callOllama("Escribe una frase corta por la que alguien debería comprar el reloj " + brand + " " + model + ". Solo texto plano, sin comillas ni explicaciones. RESPONDE ÚNICAMENTE EN ESPAÑOL Y RECUERDA QUE DEBE SER UNA FRASE CORTA, NO UN PARRAFO.");
+        return callOllama("Describe en 3 palabras, 3 adjetivos por los que alguien debería comprar el producto" + brand + " " + model + "RESPONDE ÚNICAMENTE EN ESPAÑOL Y RECUERDA QUE DEBE SER UNA FRASE CORTA, NO UN PARRAFO, SOLAMENTE LOS 3 ADJETIVOS QUE MEJOR DESCRIBAN EL PRODUCTO SEGÚN LOS EXPERTOS. NO PONGAS PUNTO AL FINAL, NI PARÉNTESIS NI NADA ADICIONAL, SOLAMENTE LOS ADJETIVOS CARACTERÍSTICOS DEL PRODUCTO. NO INCLUYAS NINGUNA INTRODUCCIÓN NI CONCLUSIÓN. SOLO LOS ADJETIVOS." );
     }
 
     private String callOllama(String promptText) {
