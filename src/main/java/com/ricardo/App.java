@@ -6,32 +6,24 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 public class App {
     public static void main(String[] args) {
         
-        // --- CONFIGURACIÓN ---
         String url = "jdbc:mysql://localhost:3306/sportstech_db";
         String user = "root";
-        String password = "TU_CONTRASEÑA_AQUI"; // <--- ✅ TU CONTRASEÑA
+        String password = "PASSWORD"; // 🔴 PASSWORD
 
-        // Usamos la IA (Gemini 2.0 Flash)
-        DescriptionGenerator ia = new GeminiGenerator(); 
-
-        StringBuilder indexHtml = new StringBuilder();
-        indexHtml.append("<!DOCTYPE html><html lang='es' class='bg-slate-900 text-slate-200'><head><title>SportsTech Miami</title><script src='https://cdn.tailwindcss.com'></script></head><body class='max-w-4xl mx-auto p-10'>");
-        indexHtml.append("<h1 class='text-5xl font-bold text-emerald-400 mb-8'>🏆 Catálogo Deportivo 2026</h1>");
-        indexHtml.append("<ul class='grid grid-cols-1 md:grid-cols-2 gap-6'>"); 
+        DescriptionGenerator ia = new OllamaGenerator(); 
+        List<IndexTemplate.ProductData> productList = new ArrayList<>();
 
         try {
             Connection conexion = DriverManager.getConnection(url, user, password);
-            System.out.println("🚀 Conectado. Leyendo base de datos...");
+            System.out.println("🚀 Iniciando generación PRO...");
 
-            // ✅ AHORA PEDIMOS TAMBIÉN LA COLUMNA 'image_url'
-            String sql = "SELECT b.name, p.model_name, p.price, p.seo_slug, p.image_url " +
-                         "FROM products p " +
-                         "JOIN brands b ON p.brand_id = b.brand_id";
-
+            String sql = "SELECT b.name, p.model_name, p.price, p.seo_slug, p.image_url FROM products p JOIN brands b ON p.brand_id = b.brand_id";
             Statement statement = conexion.createStatement();
             ResultSet resultados = statement.executeQuery(sql);
 
@@ -40,51 +32,37 @@ public class App {
                 String modelo = resultados.getString("model_name");
                 double precio = resultados.getDouble("price");
                 String slug = resultados.getString("seo_slug");
-                
-                // ✅ LEEMOS LA FOTO REAL DE LA BASE DE DATOS
                 String imageUrl = resultados.getString("image_url");
+                if (imageUrl == null || imageUrl.isEmpty()) imageUrl = "https://via.placeholder.com/800";
 
-                // Si se te olvidó poner foto en la base de datos, usamos una genérica
-                if (imageUrl == null || imageUrl.isEmpty()) {
-                    imageUrl = "https://via.placeholder.com/800x600?text=Foto+No+Disponible";
-                }
-
-                // Generar texto con la IA
-                System.out.println("🤖 IA escribiendo sobre: " + marca + " " + modelo + "...");
+                // 1. Generar REVIEW (Larga) para la página interna
+                System.out.println("🤖 IA (Review): " + modelo);
                 String reviewIA = ia.generateReview(marca, modelo, precio);
-
-                // GENERAR EL HTML
-                String nombreArchivo = slug + ".html";
-                createProductPage(nombreArchivo, marca, modelo, precio, reviewIA, imageUrl);
-                System.out.println("📄 Página creada: " + nombreArchivo);
-
-                // Añadir a la portada
-                indexHtml.append("<li class='bg-slate-800 rounded-xl border border-slate-700 hover:border-emerald-500 transition-all overflow-hidden group'>");
-                indexHtml.append("<a href='" + nombreArchivo + "' class='block no-underline'>");
-                indexHtml.append("<div class='h-64 overflow-hidden bg-white flex items-center justify-center'><img src='" + imageUrl + "' class='w-full h-full object-contain p-4 group-hover:scale-110 transition duration-500'></div>");
-                indexHtml.append("<div class='p-4 flex justify-between items-center'>");
-                indexHtml.append("<span class='text-xl font-semibold text-white'>" + marca + " " + modelo + "</span>");
-                indexHtml.append("<span class='text-emerald-400 font-bold'>$" + precio + "</span>");
-                indexHtml.append("</div></a></li>");
                 
-                // Espera de seguridad (Flash-Lite es rápido)
-                System.out.println("⏳ Esperando 4s...");
-                Thread.sleep(4000); 
+                // 2. Generar TAGLINE (Corta) para la portada
+                System.out.println("🤖 IA (Tagline): " + modelo);
+                String taglineIA = ia.generateTagline(marca, modelo);
+
+                // Guardar datos para el Index
+                productList.add(new IndexTemplate.ProductData(marca, modelo, precio, imageUrl, slug, taglineIA));
+
+                // Crear página individual
+                createProductPage(slug + ".html", marca, modelo, precio, reviewIA, imageUrl);
+                
+                System.out.println("⏳ Esperando 5s...");
+                Thread.sleep(5000); 
             }
             
-            indexHtml.append("</ul><footer class='mt-10 text-slate-500 text-center'>Generated by Ricardo's AI Engine</footer></body></html>");
-            saveFile("index.html", indexHtml.toString());
-            System.out.println("🏠 Portada FINALIZADA.");
+            // Generar Index
+            System.out.println("🎨 Creando portada con efectos...");
+            saveFile("index.html", IndexTemplate.getIndexPage(productList));
+            System.out.println("✅ ¡LISTO!");
 
             conexion.close();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        } catch (Exception e) { e.printStackTrace(); }
     }
 
     private static void createProductPage(String fileName, String brand, String model, double price, String review, String imageUrl) {
-        // Usamos el diseño rotativo que ya tenías
         String htmlContent = WebTemplate.getNextDesign(brand, model, price, review, imageUrl);
         saveFile(fileName, htmlContent);
     }
@@ -94,8 +72,6 @@ public class App {
             FileWriter writer = new FileWriter("web_output/" + fileName);
             writer.write(content);
             writer.close();
-        } catch (IOException e) {
-            System.out.println("Error escribiendo archivo: " + fileName);
-        }
+        } catch (IOException e) { System.out.println("Error: " + fileName); }
     }
 }
