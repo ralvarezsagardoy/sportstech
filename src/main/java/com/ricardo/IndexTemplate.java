@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class IndexTemplate {
+    // Plantilla HTML para la página de índice (portada), que muestra una selección de productos con sus imágenes, nombres, precios y 
+    // taglines generados por IA.
 
     public static String getIndexPage(List<ProductData> originalProducts) {
         StringBuilder itemsHtml = new StringBuilder();

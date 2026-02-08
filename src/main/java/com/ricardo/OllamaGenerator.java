@@ -7,6 +7,8 @@ import java.net.http.HttpResponse;
 import java.net.http.HttpRequest.BodyPublishers;
 
 public class OllamaGenerator implements DescriptionGenerator {
+    // Implementación de DescriptionGenerator utilizando Ollama localmente. Su función es enviar prompts a la API de Ollama
+    //  y procesar las respuestas para generar reseñas y taglines para los productos.
 
     private static final String API_URL = "http://localhost:11434/api/generate";
     private static final String MODEL_NAME = "mistral"; 
@@ -45,7 +47,6 @@ public class OllamaGenerator implements DescriptionGenerator {
 
             String rawText = extractResponse(response.body());
             
-            // LIMPIEZA FINAL (Ya sin borrar 'nn')
             return rawText
                     .replace("u003c", "<")   
                     .replace("u003e", ">")   
@@ -64,7 +65,6 @@ public class OllamaGenerator implements DescriptionGenerator {
         }
     }
 
-    // LECTOR JSON MEJORADO: Convierte \n en espacio correctamente
     private String extractResponse(String json) {
         try {
             String marker = "\"response\":\"";
@@ -76,11 +76,10 @@ public class OllamaGenerator implements DescriptionGenerator {
             for (int i = start; i < json.length(); i++) {
                 char c = json.charAt(i);
                 if (escape) {
-                    // AQUÍ ESTÁ EL ARREGLO:
-                    if (c == 'n') result.append(" ");       // \n -> espacio
-                    else if (c == 'r') result.append("");   // \r -> nada
-                    else if (c == 't') result.append(" ");  // \t -> espacio
-                    else if (c == '"') result.append('"');  // \" -> "
+                    if (c == 'n') result.append(" "); // \n -> espacio
+                    else if (c == 'r') result.append(""); // \r -> nada
+                    else if (c == 't') result.append(" "); // \t -> espacio
+                    else if (c == '"') result.append('"'); // \" -> "
                     else result.append(c);
                     escape = false;
                 } else {

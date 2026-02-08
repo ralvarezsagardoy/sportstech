@@ -1,6 +1,9 @@
 package com.ricardo;
 
-public class WebTemplate {
+public class WebTemplate { //Plantilla HTML para las páginas de producto, con un diseño elegante y moderno, 
+// utilizando colores oscuros y dorados para resaltar la exclusividad de los productos. 
+// Incluye una sección para la imagen del producto, su nombre, precio, una reseña generada por IA y un botón de compra. 
+// Además, se implementa una cortina de transición suave al cargar la página y al navegar entre páginas para mejorar la experiencia del usuario.
 
     public static String getPage(String brand, String model, double price, String reviewHtml, String imageUrl) {
         return """
